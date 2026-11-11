@@ -6,13 +6,14 @@
 
 ## 1. Identity and purpose
 
-### Active Server alignment milestone (operator revision, 2026-11-10)
+### Active Server alignment milestone (operator revision, 2026-11-11)
 
 This revision supersedes earlier Server health-only/no-config, OIDC-default and per-user-default installation decisions.
 - Missing Server configuration or missing mode selects LOCAL, loopback only; explicit OIDC retains Google validation and admin authorization. Discovery: BARADWATCHU_SERVER_CONFIG, /etc/baradwatchu/server.json, XDG_CONFIG_HOME/baradwatchu/server.json (normally ~/.config/baradwatchu/server.json).
 - Default installation is root-owned /usr/local, with unprivileged build followed by sudo file installation, following Client installer conventions including nvm. LOCAL is a runtime authentication mode, not an installation prefix.
 - Dashboard must use the Client theme and original CSS eye logo. Home = recognized/trusted Clients with per-Client request action; settings in a separate tab. No Server self-audit.
-- Reuse Client requirement configuration semantics, audit JSON model, token/session principles and integrity semantics. Server reads Client observations, understands the scope/coherence of reported SHA values, and compares against independently configured expectations; it never executes workstation checks.
+- Reuse the Client requirement catalog, audit JSON model, token/session principles and integrity semantics. The Server release bundles the paired Client catalog snapshot (manifest, configurations, tool sources and version) as its default expected baseline; authorized operators can update or restore that manifest without reinstalling. Server reads Client observations and compares reported SHA values against this independent baseline; it never executes workstation checks.
+- The Requirements page lists built-in Client requirements with localized names, descriptions, priorities, platform-specific behavior, bundled file paths/hashes and read-only source viewing. Server custom checks use Client-compatible metadata/tool fields and can be exported as a portable package for explicit Client import; the Server stores and distributes them but never executes them.
 - Report viewing/management and PDF printing must follow Client behavior/layout. Shared language/theme settings under baradwatchu are intentional when both products share an account. Rendering a received audit into PDF is allowed; inventing/re-running an audit is not.
 - Server ports must be distinct from Client defaults: Server HTTP 3000 and Angular development 4300; Client remote examples 7443 and Angular development 4200 (Client local dashboard uses an ephemeral port).
 - Completion requires actual startup/dashboard verification, report/model/integrity compatibility, PDF equivalence, installer verification, and equivalent README/LEGGIMI instructions. Real Google authentication remains deferred. No Git mutations.
