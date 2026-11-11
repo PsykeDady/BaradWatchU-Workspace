@@ -6,6 +6,17 @@
 
 ## 1. Identity and purpose
 
+### Active Server alignment milestone (operator revision, 2026-11-10)
+
+This revision supersedes earlier Server health-only/no-config, OIDC-default and per-user-default installation decisions.
+- Missing Server configuration or missing mode selects LOCAL, loopback only; explicit OIDC retains Google validation and admin authorization. Discovery: BARADWATCHU_SERVER_CONFIG, /etc/baradwatchu/server.json, XDG_CONFIG_HOME/baradwatchu/server.json (normally ~/.config/baradwatchu/server.json).
+- Default installation is root-owned /usr/local, with unprivileged build followed by sudo file installation, following Client installer conventions including nvm. LOCAL is a runtime authentication mode, not an installation prefix.
+- Dashboard must use the Client theme and original CSS eye logo. Home = recognized/trusted Clients with per-Client request action; settings in a separate tab. No Server self-audit.
+- Reuse Client requirement configuration semantics, audit JSON model, token/session principles and integrity semantics. Server reads Client observations, understands the scope/coherence of reported SHA values, and compares against independently configured expectations; it never executes workstation checks.
+- Report viewing/management and PDF printing must follow Client behavior/layout. Shared language/theme settings under baradwatchu are intentional when both products share an account. Rendering a received audit into PDF is allowed; inventing/re-running an audit is not.
+- Server ports must be distinct from Client defaults: Server HTTP 3000 and Angular development 4300; Client remote examples 7443 and Angular development 4200 (Client local dashboard uses an ephemeral port).
+- Completion requires actual startup/dashboard verification, report/model/integrity compatibility, PDF equivalence, installer verification, and equivalent README/LEGGIMI instructions. Real Google authentication remains deferred. No Git mutations.
+
 **BaradWatchU** (*Barad-dûr Watch U*) is a cross-platform endpoint security compliance auditing platform for an enterprise PC fleet. It inventories endpoints, executes configurable checks, records verifiable evidence, identifies policy drift and generates audit reports. Later milestones add narrowly authorized remediation, continuous monitoring and fleet governance.
 
 **Server subtitle (English):**
@@ -72,7 +83,7 @@ BaradWatchU/
 - Stores historical policy versions, check results, timestamps and device identities.
 - Generates machine-readable JSON/CSV and human-readable PDF reports; audit trails must include relevant policy/check versions.
 - Supports authentication, role-based authorization, tenant/organizational separation if later required, TLS and audit logs.
-- Bootstrap technology baseline: **Rust + Axum**, Angular. SQLite remains the planned first persistence adapter, with module boundaries allowing PostgreSQL later; no database model or adapter is implemented yet.
+- Bootstrap technology baseline: **Rust + Axum**, Angular. Server MVP uses SQLite for explicit identity, trusted Clients and issuer/sub administrators; no Server audit-history store. PostgreSQL remains future scope.
 - Deployment must not require AWS or any other public cloud; on-premises operation is supported.
 - Linux distribution channels: source installer, Arch `pacman`, Debian/Ubuntu `.deb`, Fedora `.rpm`. Source installation is distinct from package-manager ownership; source uninstallation must never remove package-owned files.
 - Planned system locations: executable `/usr/bin` (packages) or `/usr/local/bin` (source), web assets `/usr/share/baradwatchu-server/web`, configuration `/etc/baradwatchu/server`, persistent state `/var/lib/baradwatchu/server`. L0.1.1 source install writes only executable/assets/manifest and creates no service/config/data.
@@ -745,3 +756,8 @@ Milestones may be broken into smaller checkpoints, but do not silently redefine 
 ---
 
 **Current activity:** Client reboot implementation remains in progress (§11). M7 System Tray & Notifications implemented locally and verified on Linux/KDE Plasma 6 (Windows/macOS compile-checked only). M5 dashboard, M6 CustomChecks and the M7 review (integrity gate, fault-isolated custom folders, criteria alignment, installer and dashboard UX) are implemented locally and verified, including a temporary-prefix install/reinstall/uninstall cycle. Legacy overlap removed. Real `/usr/local` install verified. Remaining: validation on Arch hosts other than the developer workstation. Historical CP1–CP5 evidence above describes the legacy architecture and is not acceptance evidence for the rebooted catalog. Server has no independently authenticated custom-control catalog; that work requires a later Server/API and client identity milestone.
+
+### Server MVP authorization (2026-11-10)
+Operator authorizes the existing Rust/Axum + Angular Server MVP: explicit Ed25519 identity generation and manual Client trust, Google OIDC Authorization Code + PKCE with backend Secure/HttpOnly/SameSite sessions, explicit issuer/sub multi-admin allowlist provisioned locally, trusted Client listing, consent-based remote audits through Client protocol v1, operator display-name metadata in consent/history/PDF, minimal SQLite persistence. No Server audit-history store, scheduling, remediation, discovery, automatic pairing or multi-tenancy. Checkpoints: identity/connectivity → auth/admins → orchestration/metadata → Angular → end-to-end verification/docs. Real Google verification must be distinguished from automated tests. This supersedes earlier Client-only scope and Server-requester deferral.
+
+Server MVP implementation checkpoint (2026-11-10): all five implementation areas complete; verification includes mock-OIDC signed-token/PKCE tests, two separately authorized operators through real Server handlers/mTLS and isolated Client service/link processes, named consent/cache/PDF, and Angular browser smoke. Google OAuth credentials are not configured: actual Google/Workspace login and privileged deployment remain manual acceptance, explicitly deferred by operator. Details and commands in MEMORY.md and Server README/LEGGIMI.
