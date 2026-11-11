@@ -83,7 +83,7 @@ BaradWatchU/
 - Stores historical policy versions, check results, timestamps and device identities.
 - Generates machine-readable JSON/CSV and human-readable PDF reports; audit trails must include relevant policy/check versions.
 - Supports authentication, role-based authorization, tenant/organizational separation if later required, TLS and audit logs.
-- Bootstrap technology baseline: **Rust + Axum**, Angular. Server MVP uses SQLite for explicit identity, trusted Clients and issuer/sub administrators; no Server audit-history store. PostgreSQL remains future scope.
+- Bootstrap technology baseline: **Rust + Axum**, Angular. Server MVP uses SQLite for explicit identity, trusted Clients and issuer/sub administrators; received report history scoped by requesting operator in the same SQLite database (alignment milestone). PostgreSQL remains future scope.
 - Deployment must not require AWS or any other public cloud; on-premises operation is supported.
 - Linux distribution channels: source installer, Arch `pacman`, Debian/Ubuntu `.deb`, Fedora `.rpm`. Source installation is distinct from package-manager ownership; source uninstallation must never remove package-owned files.
 - Planned system locations: executable `/usr/bin` (packages) or `/usr/local/bin` (source), web assets `/usr/share/baradwatchu-server/web`, configuration `/etc/baradwatchu/server`, persistent state `/var/lib/baradwatchu/server`. L0.1.1 source install writes only executable/assets/manifest and creates no service/config/data.
