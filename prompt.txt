@@ -1,0 +1,329 @@
+# BaradWatchU Client: macOS support, security checks and source installer
+
+You are now on a real MACOS, with Bit defender installed
+Implement macOS support for BaradWatchU-Client, following the existing architecture, security requirements, implementation conventions and installation experience already established for Linux and Windows.
+
+The objective is to obtain a Client capable of performing meaningful macOS security audits, generating compatible reports and being installed directly from source.
+
+**Scope: BaradWatchU-Client only.** Do not modify BaradWatchU-Server unless an actual protocol incompatibility is discovered and the operator explicitly approves the change.
+
+## 1. Preliminary analysis
+
+Before implementing anything:
+
+- Read AGENTS.md, MEMORY.md and REQUIREMENTS.md.
+- Inspect the existing Client architecture, security requirements, builtin check catalogs, provider model, audit engine, installers, tray, dashboard, identity/trust management, privileged service and remote tunnel.
+- Identify which macOS components already exist, which are incomplete and which have never been verified on real macOS.
+- Study both Linux and Windows implementations to understand their functional contracts.
+- Preserve existing requirement identifiers, audit result schemas, integrity mechanisms, localization and PDF rendering behavior.
+
+Do not redesign existing working components or introduce unnecessary abstractions.
+
+Distinguish clearly between functionality already implemented, functionality requiring adaptation and functionality requiring new implementation.
+
+## 2. macOS security requirements
+
+Analyze all existing security requirements, REQ-001 through REQ-009, and determine how each can be evaluated on macOS.
+
+Use the actual requirement definitions and the established Linux/Windows behavior as the reference.
+
+For each requirement, investigate:
+
+- The intended security objective.
+- Equivalent native macOS security mechanisms.
+- Available system commands, frameworks or APIs.
+- Required privileges.
+- Differences between macOS versions and hardware architectures.
+- Reliable PASS, FAIL, WARNING and ERROR conditions.
+- Conditions that are unsupported, not applicable or impossible to determine reliably.
+- Whether the existing provider model is appropriate.
+
+Investigate relevant macOS technologies where applicable, including:
+
+- macOS software update mechanisms.
+- XProtect, Gatekeeper and related security protections.
+- Application Firewall and packet filtering.
+- DNS configuration and hosts-based filtering.
+- VPN clients and network extensions.
+- FileVault and filesystem encryption.
+- Screen locking and session security.
+- Password policies and account security.
+- System Integrity Protection, Secure Boot and hardware security capabilities.
+
+These are investigation candidates, not mandatory implementation choices.
+
+Verify the actual behavior of each mechanism before using it.
+
+Do not assume that a Linux or Windows security control has a direct macOS equivalent.
+
+Preserve the underlying security objective rather than forcing identical implementation details.
+
+Where reliable verification is impossible, report the limitation explicitly rather than inventing a successful result.
+
+Respect the existing audit status model. Do not introduce new result statuses without first verifying whether the existing contract already supports the required semantics.
+
+## 3. macOS builtin-check catalog
+
+Create the macOS equivalent of the existing platform-specific requirement catalogs.
+
+Study the actual catalog structure and conventions before choosing directories, filenames or execution strategies.
+
+Requirements:
+
+- Preserve REQ-001 through REQ-009.
+- Reuse the existing configuration schema.
+- Support parameters and providers where appropriate.
+- Preserve the existing execution and timeout semantics.
+- Follow the established stdout/result JSON contract.
+- Handle missing commands, insufficient privileges and unsupported capabilities correctly.
+- Prefer native macOS tools and APIs.
+- Avoid GNU-specific command assumptions.
+- Avoid unnecessary third-party runtime dependencies.
+- Preserve the existing integrity gate and trusted SHA-256 manifest.
+
+Adapt the catalog discovery and asset-staging mechanisms only where required.
+
+Ensure the new macOS catalog is included in the correct build and installation artifacts.
+
+Do not modify Linux or Windows check behavior unnecessarily.
+
+Do not create a separate macOS audit engine.
+
+## 4. macOS source installer
+
+Create a dedicated macOS source installer, preferably named `install-macos.sh`.
+
+**Before designing or implementing the installer, thoroughly study the existing `BaradWatchU-Client/install.sh`.**
+
+Treat it as the authoritative reference for:
+
+- Command-line interface and supported options.
+- Dependency detection and reporting.
+- Source compilation and build caching.
+- Installation modes and privilege handling.
+- Artifact staging and integrity validation.
+- Installation, upgrade, reinstallation and uninstallation.
+- Running-process detection and graceful termination.
+- Tray integration and autostart behavior.
+- Privileged service installation and lifecycle.
+- Error handling, safety checks and operator-facing messages.
+
+Do not invent a new installer interface or prescribe options independently of the existing implementation.
+
+Derive the macOS installer's behavior from the actual Linux installer, preserving functional parity wherever meaningful.
+
+Adapt platform-specific mechanisms to macOS, including filesystem conventions, process management, permissions and launchd integration.
+
+The installer must support building the entire application from a fresh source checkout, including Rust components, Angular dashboard and required assets.
+
+Compile as an unprivileged user whenever possible. Elevate privileges only when required by the selected installation mode.
+
+Preserve the existing distinction between system-wide and per-user installations, including their different service and remote-audit capabilities.
+
+Do not blindly port Linux-specific commands or assumptions. Where equivalent macOS behavior requires a different implementation, use native mechanisms while preserving the established installer semantics.
+
+Avoid modifying the Linux installer unless a concrete compatibility issue requires it and the operator approves.
+
+**The goal is not to create a new installer design, but to port the existing installation experience faithfully to macOS.**
+
+## 5. Installation modes and lifecycle
+
+Study the current Client installation architecture and preserve its established behavior.
+
+For system-wide installations, investigate the appropriate macOS installation paths, permissions, privileged service registration and launchd integration.
+
+For per-user installations, preserve the existing local functionality without introducing an unnecessary privileged service.
+
+The installer must correctly handle the lifecycle of installed components, including the application, dashboard, tray and system service where applicable.
+
+Pay particular attention to:
+
+- Existing installation detection.
+- Safe upgrades and reinstalls.
+- Running-process detection.
+- Graceful process termination.
+- Preservation of user configuration and history.
+- Preservation of cryptographic identities and trust stores.
+- Prevention of accidental overwrites or deletion of unrelated files.
+- Correct handling of installation privileges.
+- Separation of user-level and system-level state.
+
+Never generate, reset or replace cryptographic identities automatically during installation.
+
+Follow the existing installer lifecycle rules rather than creating a parallel design.
+
+## 6. Dashboard, tray and remote connectivity
+
+Inspect the current macOS compatibility of all relevant Client components.
+
+Verify or adapt:
+
+- Angular dashboard and browser launcher.
+- Local dashboard session security.
+- Tray icon and menu integration.
+- Native notifications.
+- Consent dialogs.
+- Identity generation, export and trust management.
+- User-level configuration and state directories.
+- Privileged service and local IPC.
+- Client-to-Server authenticated outbound tunnel.
+- Connection management, Start/Stop/Refresh and reconnection.
+- Remote audit consent and its established timeout.
+
+**The current outbound Client-to-Server tunnel architecture is authoritative.**
+
+Do not restore the obsolete inbound Client listener or UDP discovery mechanisms.
+
+Preserve existing Ed25519 trust and TLS security semantics.
+
+The Client must never accept automatic network pairing.
+
+Remote audit requests must continue to require explicit local consent.
+
+Do not change the Server protocol unless an actual incompatibility is demonstrated and approved.
+
+## 7. macOS installer verification
+
+Study the existing Linux installer tests, validation scripts and documented verification procedures.
+
+Derive an equivalent macOS validation strategy covering the actual supported operations and lifecycle scenarios.
+
+Verify fresh installation, upgrades, running-process handling, uninstall safety, preservation of user data, privilege boundaries and service management.
+
+Use isolated temporary installation paths where possible.
+
+Do not modify system services or perform privileged installation tests on the operator's machine without explicit authorization.
+
+Document any differences from `install.sh`, explaining why they are necessary on macOS.
+
+## 8. Testing and validation
+
+Develop a reproducible macOS validation plan comparable to the existing Linux and Windows testing.
+
+Cover:
+
+- Rust compilation, unit tests, Clippy and formatting.
+- Angular production build and dashboard tests.
+- Execution of REQ-001 through REQ-009.
+- Builtin catalog integrity and SHA-256 validation.
+- Custom-check execution and configuration overrides.
+- Provider execution and result aggregation.
+- Audit JSON generation and compatibility.
+- PDF generation and visual correctness.
+- Localization.
+- Tray menus and notifications.
+- Consent handling.
+- Installer lifecycle.
+- launchd service behavior.
+- Identity and trust persistence.
+- Outbound tunnel connection to an existing BaradWatchU Server.
+- Disconnection, reconnection and interrupted sessions.
+- Remote audit request and result retrieval.
+
+Clearly distinguish:
+
+- Verified on real macOS.
+- Compile-checked only.
+- Tested through mocks or isolated fixtures.
+- Not verified.
+
+Do not claim macOS runtime compatibility based solely on cross-compilation from Linux.
+
+Do not execute destructive installation, service-management or system-configuration tests on the operator's real machine without explicit authorization.
+
+Where real macOS testing is not currently available, implement appropriate automated tests and provide precise manual verification instructions.
+
+## 9. macOS compatibility and hardware differences
+
+Investigate compatibility with both Intel and Apple Silicon Macs.
+
+Identify the minimum macOS version supported by the actual Rust, Angular, tray and native dependencies.
+
+Avoid assuming that every macOS release exposes the same security capabilities.
+
+In particular, distinguish security mechanisms available on:
+
+- Older Intel Macs without a T2 chip.
+- Intel Macs equipped with a T2 chip.
+- Apple Silicon Macs.
+
+Do not classify a missing hardware capability as a security failure unless the requirement explicitly defines it as mandatory for that platform.
+
+Where a control is genuinely not applicable, represent the condition using the existing audit contract.
+
+Do not introduce artificial compatibility layers for unsupported macOS releases without a concrete requirement.
+
+## 10. Documentation
+
+Update the existing English and Italian documentation, preserving technical equivalence between README.md and LEGGIMI.md.
+
+Document:
+
+- Supported macOS versions and architectures.
+- Build prerequisites.
+- Source installation workflow.
+- Installer behavior and supported options derived from the implementation.
+- System-wide and per-user installation.
+- Privilege requirements.
+- Native macOS security checks.
+- Known limitations and unsupported capabilities.
+- Tray and service management.
+- Local and remote audit workflows.
+- Testing and verification procedures.
+
+Update the root MEMORY.md and REQUIREMENTS.md as appropriate, preserving their existing structure and keeping MEMORY.md compact and useful for future AI sessions.
+
+## 11. Scope and implementation rules
+
+- No unnecessary Linux or Windows refactoring.
+- No new audit engine.
+- No incompatible report schemas.
+- No automatic cryptographic identity generation.
+- No weakening of existing security controls.
+- No speculative compatibility claims.
+- No unnecessary dependencies.
+- No unrelated Server modifications.
+- No Git mutations.
+- No destructive changes to the operator's environment without authorization.
+
+Prefer the smallest coherent implementation that integrates naturally with the existing codebase.
+
+Where a requirement cannot be implemented reliably, explain the limitation and propose the simplest viable alternative.
+
+Preserve the existing project's architectural decisions unless the operator explicitly authorizes a change.
+
+## 12. Expected outcome
+
+Deliver:
+
+1. A documented macOS compatibility analysis for REQ-001 through REQ-009.
+2. A functional macOS builtin-check catalog.
+3. A dedicated macOS source installer derived from the existing Linux installer.
+4. Necessary macOS-specific integration changes.
+5. Compatibility with the existing dashboard, report and remote-audit contracts.
+6. A reproducible validation plan.
+7. Updated English and Italian documentation.
+8. An updated MEMORY.md recording implementation status, relevant paths and outstanding verification.
+
+Begin by inspecting the existing repository and identifying the actual implementation gaps.
+
+Implement incrementally, reusing established patterns and avoiding unnecessary redesign.
+
+Do not mark the goal complete until the implementation status and remaining runtime verification requirements are explicitly distinguished.
+
+## 13. Bitdefender on the macOS test machine
+
+**Bitdefender is already installed on the macOS machine that will be used for testing.**
+
+Take this into account when analyzing and implementing the antivirus/endpoint protection requirements.
+
+- Investigate how to reliably detect Bitdefender on macOS.
+- Identify whether its installation, running status, protection status and update status can be verified through supported macOS mechanisms or Bitdefender interfaces.
+- Do not assume that an installed application is necessarily running or providing active protection.
+- Avoid relying solely on process names or application directory presence when stronger verification is available.
+- Do not require Bitdefender-specific logic if a reliable vendor-independent macOS detection mechanism exists.
+- Never disable, modify or interfere with Bitdefender during testing.
+
+**The expected outcome is that BaradWatchU correctly recognizes the installed Bitdefender product and evaluates its security status as accurately as the available macOS interfaces permit.**
+
+Document any limitations caused by macOS permissions or unavailable vendor APIs. Do not report PASS for protection states that cannot actually be verified.
