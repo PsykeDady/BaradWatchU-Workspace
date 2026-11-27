@@ -5,7 +5,7 @@ Legend: ✅ implemented+verified · 🟡 implemented, runtime unverified · ⏳ 
 - Root `BaradWatchU/` = workspace git repo (tracks MEMORY/REQUIREMENTS/.idea). Child repos (independent, CamelCase): `BaradWatchU-Client/`, `BaradWatchU-Server/`. Root-only files: AGENTS.md, MEMORY.md, REQUIREMENTS.md, catalogo-requisiti-proposto.md.
 - Git read-only for agent (give operator the commands). README.md (EN) ≡ LEGGIMI.md (IT), keep Tolkien subtitles.
 - Client = reference for shared contracts (report JSON, PDF, catalog, locales, installer UX). Server never audits itself; only requests/receives/displays Client reports.
-- State 2026-11-16: Client HEAD `e2cbc6f`, Server HEAD `2f5eb50`, both worktrees clean (all work below committed). Root repo: MEMORY.md merge conflict resolved in file (operator must `git add MEMORY.md`); `startAll.sh` deleted.
+- State 2026-11-25: Client HEAD `a91b16c`, Server HEAD `1711f5f` (UX + translation fix + Windows fixes committed). Uncommitted in both: GPL license change (§9).
 - Translation: IT keeps `trusted` for Client↔Server trust; `attendibile` only for Barad Policy file trust. Tool/Device ID/Fingerprint/CLI stay English. All diagnostics via catalog keys.
 - Operator refs: audit criteria `~/.claude/skills/audit-postazione/SKILL.md` (R1–R7); installer inspiration `~/Codici/bash/AQTRunCat`; operator custom check `~/.config/baradwatchu/custom-checks/CUSTOM-001` (copy is a unit test). Headless screenshots: `google-chrome-stable --headless=new --screenshot=…`.
 
@@ -128,3 +128,4 @@ Legend: ✅ implemented+verified · 🟡 implemented, runtime unverified · ⏳ 
 - Dashboard API stays a per-user loopback process (not served by the service).
 - Client audit history in XDG cache, no auto-pruning; Server history in SQLite (multi-operator).
 - Server LOCAL default; OIDC never has an unauthenticated bypass.
+- License (2026-11-25): both repos `GPL-3.0-or-later` (canonical gnu.org text in `LICENSE`; Cargo workspace + web/package.json; README/LEGGIMI `## License`/`## Licenza`; Client notes custom checks = separate processes, not GPL-bound). AGPL rejected: corporate AGPL bans hurt adoption. Prior Cargo `MIT` declared w/o LICENSE file. Open: confirm copyright with Brainy Labs + co-author Michael Bonelli (1 commit/repo).
